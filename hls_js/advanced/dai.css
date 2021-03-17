@@ -116,9 +116,15 @@ input[type="text"] {
   width: 300px;
 }
 
-#companion {
+#companion, #console {
   width: 728px;
   height: 90px;
   margin: auto;
   margin-top: 10px;
+}
+
+#console{
+  border: 1px solid lightgray;
+  border-radius: 4px;
+  overflow-y: scroll;
 }

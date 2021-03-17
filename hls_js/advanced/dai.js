@@ -1,5 +1,5 @@
 // This stream will be played if ad-enabled playback fails.
-goog.module('google3.javascript.ads.interactivemedia.sdk.dai.sample.h5.hls_js.advanced.dai');
+// goog.module('google3.javascript.ads.interactivemedia.sdk.dai.sample.h5.hls_js.advanced.dai');
 
 var BACKUP_STREAM =
     'http://storage.googleapis.com/testtopbox-public/video_content/bbb/' +
@@ -14,9 +14,6 @@ var TEST_VIDEO_ID = 'tears-of-steel';
 
 // StreamManager which will be used to request ad-enabled streams.
 var streamManager;
-
-// hls.js video player.
-var hls = new Hls({autoStartLoad: false});
 
 // Radio button for Live Stream.
 var liveRadio;
@@ -84,6 +81,10 @@ var isLiveStream;
 // Whether the stream is currently in an ad break.
 var isAdBreak;
 
+var hls;
+
+var uiconsole;
+
 /**
  * Initializes the page.
  */
@@ -107,6 +108,7 @@ function initUI() {
   cmsIdInput = document.getElementById('cms-id');
   videoIdInput = document.getElementById('video-id');
   vodAPIKeyInput = document.getElementById('vod-api-key');
+  uiconsole = document.getElementById('console');
 
   liveRadio.addEventListener('click', onLiveRadioClick);
 
@@ -158,15 +160,20 @@ function initPlayer() {
   streamManager.addEventListener(
       google.ima.dai.api.StreamEvent.Type.STARTED, onAdStarted, false);
 
-  hls.on(Hls.Events.FRAG_PARSING_METADATA, function(event, data) {
-    if (streamManager && data) {
-      // For each ID3 tag in our metadata, we pass in the type - ID3, the
-      // tag data (a byte array), and the presentation timestamp (PTS).
-      data.samples.forEach(function(sample) {
-        streamManager.processMetadata('ID3', sample.data, sample.pts);
-      });
-    }
-  });
+  if (!use_native_player()){
+     // hls.js video player.
+  hls  = new Hls({autoStartLoad: false});
+  // hls.on(Hls.Events.FRAG_PARSING_METADATA, function(event, data) {
+  //   if (streamManager && data) {
+  //     // For each ID3 tag in our metadata, we pass in the type - ID3, the
+  //     // tag data (a byte array), and the presentation timestamp (PTS).
+  //     data.samples.forEach(function(sample) {
+  //       // console.log('ID3', sample.data, sample.pts)
+  //       streamManager.processMetadata('ID3', sample.data, sample.pts);
+  //     });
+  //   }
+  // });
+  }
 
   playButton.addEventListener('click', onPlayButtonClick);
   bookmarkButton.addEventListener('click', onBookmarkButtonClick);
@@ -261,7 +268,7 @@ function requestVODStream() {
  * @param{StreamEvent} e StreamEvent fired when stream is loaded.
  */
 function onStreamLoaded(e) {
-  console.log('Stream loaded');
+  log('Stream loaded');
   loadUrl(e.getStreamData().url);
 }
 
@@ -270,7 +277,7 @@ function onStreamLoaded(e) {
  * @param{StreamEvent} e StreamEvent fired on stream error.
  */
 function onStreamError(e) {
-  console.log('Error loading stream, playing backup stream.' + e);
+  log('Error loading stream, playing backup stream.' + e);
   loadUrl(BACKUP_STREAM);
 }
 
@@ -338,23 +345,40 @@ function onAdStarted(e) {
  */
 function loadUrl(url) {
   console.log('Loading:' + url);
-  hls.on(Hls.Events.MANIFEST_PARSED, () => {
-    console.log('Video Play');
-    var startTime = 0;
-    if (bookmarkTime) {
-      var startTime = streamManager.streamTimeForContentTime(bookmarkTime);
-      // Seeking on load will trigger the onSeekEnd event, so treat this seek as
-      // if it's snapback. Without this, resuming at a bookmark will kick you
-      // back to the ad before the bookmark.
-      isSnapback = true;
+  
+  if( use_native_player() ) {
+    videoElement.src = url;
+    videoElement.textTracks.addEventListener('addtrack', onAddTrack);
+    const videoPromise = videoElement.play();
+
+    if (videoPromise != undefined) {
+      videoPromise.then(_ => {  }).catch(e => console.log(e));
     }
-    hls.startLoad(startTime);
-    videoElement.addEventListener('loadedmetadata', () => {
-      videoElement.play();
+
+    // cta.addEventListener('click', function() {
+    //   video.play();
+    // });
+    
+  } else {
+    hls.loadSource(url);
+    hls.attachMedia(videoElement);
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      console.log('Video Play');
+      var startTime = 0;
+      if (bookmarkTime) {
+        var startTime = streamManager.streamTimeForContentTime(bookmarkTime);
+        // Seeking on load will trigger the onSeekEnd event, so treat this seek as
+        // if it's snapback. Without this, resuming at a bookmark will kick you
+        // back to the ad before the bookmark.
+        isSnapback = true;
+      }
+      hls.startLoad(startTime);
+      videoElement.addEventListener('loadedmetadata', () => {
+        videoElement.play();
+      });
     });
-  });
-  hls.loadSource(url);
-  hls.attachMedia(videoElement);
+    hls.on(Hls.Events.FRAG_PARSING_METADATA, onParseMetadata);
+  }
   videoElement.controls = true;
 }
 
@@ -403,4 +427,66 @@ function onStreamPlay() {
     videoElement.controls = false;
     adUiDiv.style.display = 'block';
   }
+}
+
+
+function use_native_player() {
+  // this could be a more advanced check, but instead is a trivial navigator
+  if( !browser_check.verified ) {
+    browser_check.verified  = true;
+    browser_check.is_safari = navigator.vendor &&
+      navigator.vendor.indexOf('Apple') > -1 &&
+      navigator.userAgent &&
+      navigator.userAgent.indexOf('CriOS') == -1 &&
+      navigator.userAgent.indexOf('FxiOS') == -1;
+  }
+  return browser_check.is_safari;
+}
+
+var browser_check = {
+  'verified' : false,
+  'is_safari': false
+};
+
+/**
+ * Called to process metadata for the native video element.
+ * @param {Event} event The add track event.
+ */
+ function onAddTrack(event) {
+  const track = event.track;
+  if (track.kind === 'metadata') {
+    console.log('metadata track');
+    track.mode = 'hidden';
+    track.addEventListener('cuechange', (unusedEvent) => {
+      log('cuechange');
+      for (const cue of track.activeCues) {
+        const metadata = {};
+        metadata[cue.value.key] = cue.value.data;
+        log('onTimedMetadata');
+        streamManager.onTimedMetadata(metadata);
+      }
+    });
+  }
+}
+
+/**
+ * Called to process metadata for HLS.js.
+ * @param {Event} event The add track event.
+ * @param {Object} data An array of ID3 tags
+ */
+function onParseMetadata(event, data) {
+  log('parse metadata');
+  if (streamManager && data) {
+    // For each ID3 tag in our metadata, we pass in the type - ID3, the
+    // tag data (a byte array), and the presentation timestamp (PTS).
+    data.samples.forEach(function(sample) {
+      log('processMetadata');
+      streamManager.processMetadata('ID3', sample.data, sample.pts);
+    });
+  }
+}
+
+function log(msg){
+  uiconsole.innerHTML += msg + '<br/>';
+  uiconsole.scrollTop = uiconsole.scrollHeight;
 }
