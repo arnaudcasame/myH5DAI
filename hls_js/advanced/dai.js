@@ -455,7 +455,7 @@ var browser_check = {
  function onAddTrack(event) {
   const track = event.track;
   if (track.kind === 'metadata') {
-    console.log('metadata track');
+    log('metadata track');
     track.mode = 'hidden';
     track.addEventListener('cuechange', (unusedEvent) => {
       log('cuechange');
@@ -487,6 +487,11 @@ function onParseMetadata(event, data) {
 }
 
 function log(msg){
-  uiconsole.innerHTML += msg + '<br/>';
+  var time = new Date();
+  var hours = time.getHours();
+  var minutes = time.getMinutes();
+  var milliSeconds = time.getMilliseconds();
+  var message = `${hours}:${minutes}:${milliSeconds} ${msg}`
+  uiconsole.innerHTML += message + '<br/>';
   uiconsole.scrollTop = uiconsole.scrollHeight;
 }
