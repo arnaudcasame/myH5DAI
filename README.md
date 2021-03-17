@@ -8,7 +8,7 @@ This project hosts samples for the
 [HLS.js simple](https://github.com/googleads/googleads-ima-html5-dai/tree/master/hls_js/simple) -
 Simple example using HLS.js.
 
-[HLS.js advanced](https://arnaudcasame.github.io/hls_js/advanced/dai.html) -
+[HLS.js advanced](https://arnaudcasame.github.io/myH5DAI/hls_js/advanced/dai.html) -
 Advanced example using HLS.js.
 
 [DAI Pre-roll](https://github.com/googleads/googleads-ima-html5-dai/tree/master/dai_preroll) -
