@@ -1,7 +1,8 @@
 <html>
 <head>
   <script src="https://cdn.jsdelivr.net/hls.js/latest/hls.min.js"></script>
-  <script type="text/javascript" src="https://imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script>
+  <!-- <script type="text/javascript" src="https://imasdk.googleapis.com/js/sdkloader/ima3_dai.js"></script> -->
+  <script type="text/javascript" src="https://imasdk.googleapis.com/js/sdkloader/ima3_dai_debug.js"></script>
   <script src="dai.js"></script>
   <link rel="stylesheet" href="dai.css" type="text/css">
 </head>
@@ -19,6 +20,10 @@
         <input type="radio" id="vod-radio" name="stream-type"/>
         <label for="vod-radio">VOD (<span id="sample-vod-link" class="link">Sample</span>)</label>
       </div>
+      <div class="radio-group">
+        <input type="radio" id="pod-radio" name="stream-type"/>
+        <label for="pod-radio">PodServing (<span id="sample-pod-link" class="link">Sample</span>)</label>
+      </div>
       <div id="live-inputs" class="input-group">
         <label for="asset-key" class="input-group">Asset key: </label>
         <input type="text" id="asset-key" class="input-group"/><br />
@@ -32,6 +37,14 @@
         <input type="text" id="video-id" class="input-group"/><br />
         <label for="vod-api-key" class="input-group">API Key (optional): </label>
         <input type="text" id="vod-api-key" class="input-group"/>
+      </div>
+      <div id="pod-inputs" class="input-group">
+        <label for="custom-asset-key" class="input-group">Custom Asset Key: </label>
+        <input type="text" id="custom-asset-key"/>
+        <label for="pod-url" class="input-group">Stream Url: </label>
+        <input type="text" id="pod-url" class="input-group"/><br />
+        <label for="network-code" class="input-group">Network Code: </label>
+        <input type="text" id="network-code" class="input-group"/>
       </div>
     </div>
 

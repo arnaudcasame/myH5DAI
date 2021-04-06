@@ -11,6 +11,11 @@ var TEST_ASSET_KEY = 'sN_IYUG8STe1ZzhIIE_ksA';
 var TEST_CONTENT_SOURCE_ID = '2528370';
 var TEST_VIDEO_ID = 'tears-of-steel';
 
+// PodServing Sample parameters
+var POD_URL = "https://encodersim.sandbox.google.com/masterPlaylist/9c654d63-5373-4673-8c8d-6d92b66b9d46/master.m3u8?gen-seg-redirect=true&network=51636543&event=google-sample&pids=devrel4628000,devrel896000,devrel3528000,devrel1428000,devrel2628000,devrel1928000&seg-host=dai.google.com&stream_id=";
+var CUSTOM_ASSET_KEY = "google-sample";
+var NETWORK_CODE = "51636543";
+
 // StreamManager which will be used to request ad-enabled streams.
 var streamManager;
 
@@ -98,20 +103,26 @@ function initPage() {
 function initUI() {
   liveRadio = document.getElementById('live-radio');
   vodRadio = document.getElementById('vod-radio');
+  podRadio = document.getElementById('pod-radio');
   liveFakeLink = document.getElementById('sample-live-link');
   vodFakeLink = document.getElementById('sample-vod-link');
+  podFakeLink = document.getElementById('sample-pod-link');
   liveInputs = document.getElementById('live-inputs');
   vodInputs = document.getElementById('vod-inputs');
+  podInputs = document.getElementById('pod-inputs');
   assetKeyInput = document.getElementById('asset-key');
   liveAPIKeyInput = document.getElementById('live-api-key');
   cmsIdInput = document.getElementById('cms-id');
   videoIdInput = document.getElementById('video-id');
   vodAPIKeyInput = document.getElementById('vod-api-key');
+  customAssetKeyInput = document.getElementById('custom-asset-key');
+  podUrlInput = document.getElementById('pod-url');
+  networkCodeInput = document.getElementById('network-code');
   uiconsole = document.getElementById('console');
 
   liveRadio.addEventListener('click', onLiveRadioClick);
-
   vodRadio.addEventListener('click', onVODRadioClick);
+  podRadio.addEventListener('click', onPODRadioClick);
 
   liveFakeLink.addEventListener('click', () => {
     onLiveRadioClick();
@@ -122,6 +133,13 @@ function initUI() {
     onVODRadioClick();
     cmsIdInput.value = TEST_CONTENT_SOURCE_ID;
     videoIdInput.value = TEST_VIDEO_ID;
+  });
+
+  podFakeLink.addEventListener('click', () => {
+    onPODRadioClick();
+    podUrlInput.value = POD_URL;
+    networkCodeInput.value = NETWORK_CODE;
+    customAssetKeyInput.value = CUSTOM_ASSET_KEY;
   });
 }
 
@@ -146,6 +164,8 @@ function initPlayer() {
   streamManager = new google.ima.dai.api.StreamManager(videoElement, adUiDiv);
   streamManager.addEventListener(
       google.ima.dai.api.StreamEvent.Type.LOADED, onStreamLoaded, false);
+  streamManager.addEventListener(
+        google.ima.dai.api.StreamEvent.Type.STREAM_INITIALIZED, onStreamInitialized, false);
   streamManager.addEventListener(
       google.ima.dai.api.StreamEvent.Type.ERROR, onStreamError, false);
   streamManager.addEventListener(
@@ -183,6 +203,7 @@ function initPlayer() {
  */
 function onLiveRadioClick() {
   vodInputs.style.display = 'none';
+  podInputs.style.display = 'none';
   liveInputs.style.display = 'block';
 }
 
@@ -191,7 +212,17 @@ function onLiveRadioClick() {
  */
 function onVODRadioClick() {
   liveInputs.style.display = 'none';
+  podInputs.style.display = 'none';
   vodInputs.style.display = 'block';
+}
+
+/**
+ * Displays the VOD inputs and hides the live inputs.
+ */
+ function onPODRadioClick() {
+  liveInputs.style.display = 'none';
+  vodInputs.style.display = 'none';
+  podInputs.style.display = 'block';
 }
 
 /**
@@ -216,8 +247,10 @@ function getQueryParams() {
 function onPlayButtonClick() {
   if (liveRadio.checked) {
     requestLiveStream();
-  } else {
+  } else if (vodRadio.checked) {
     requestVODStream();
+  }else{
+    requestPODStream();
   }
 }
 
@@ -261,6 +294,28 @@ function requestVODStream() {
   streamRequest.apiKey = vodAPIKeyInput.value;
   streamManager.requestStream(streamRequest);
 }
+
+/**
+ * Requests a VOD stream with ads.
+ */
+ function requestPODStream() {
+  isLiveStream = true;
+  var streamRequest = new google.ima.dai.api.PodStreamRequest();
+  streamRequest.customAssetKey = customAssetKeyInput.value;
+  streamRequest.networkCode = networkCodeInput.value;
+  // streamRequest.apiKey = vodAPIKeyInput.value;
+  streamManager.requestStream(streamRequest);
+}
+
+/**
+ * Loads the stream.
+ * @param{StreamEvent} e StreamEvent fired when stream is loaded.
+ */
+ function onStreamInitialized(e) {
+  log('Stream Initialized');
+  loadUrl(e.getStreamData());
+}
+
 
 /**
  * Loads the stream.
@@ -342,8 +397,12 @@ function onAdStarted(e) {
  * Loads and plays a Url.
  * @param  {string} url
  */
-function loadUrl(url) {
-  console.log('Loading:' + url);
+function loadUrl(stream) {
+  console.log('Loading: ', stream);
+  var url;
+  if(typeof stream !== 'string'){
+    url = POD_URL + stream.streamId;
+  }
   
   if( use_native_player() ) {
     videoElement.src = url;
