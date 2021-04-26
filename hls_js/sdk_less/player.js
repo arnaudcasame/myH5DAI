@@ -1,30 +1,42 @@
 // This stream will be played if ad-enabled playback fails.
 // goog.module('google3.javascript.ads.interactivemedia.sdk.dai.sample.h5.hls_js.simple.dai');
 
-var BACKUP_STREAM =
-    'http://storage.googleapis.com/testtopbox-public/video_content/bbb/' +
-    'master.m3u8';
+
+class Player {
+
+  #DEFAULT_STREAM;
+  #hls;
+  #ui;
 
 
-    // BACKUP_STREAM = "https://storage.googleapis.com/willkiff/fmp4/downloaded/master.m3u8";
+  constructor(stream){
+    this.#DEFAULT_STREAM = stream ? stream : 'http://storage.googleapis.com/testtopbox-public/video_content/bbb/master.m3u8';
+    if(Hls.isSupported()){
+      this.#hls = new Hls();
+      this.#ui = new UI();
+    }
+  }
 
-// hls.js video player
-var hls = new Hls();
+  loadStream(){
+    this.#hls.loadSource(this.#DEFAULT_STREAM);
+    this.#hls.attachMedia(this.#ui.videoElement);
+    this.#hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
+      console.dir(event);
+      console.dir(data);
+  
+      console.log('manifest loaded, found ' + data.levels.length + ' quality level');
+      this.#ui.videoElement.play();
+    });
+  }
+}
 
-// Video element
-var videoElement;
+// BACKUP_STREAM = "https://storage.googleapis.com/willkiff/fmp4/downloaded/master.m3u8";
 
-// Ad UI element
-var adUiElement;
 
 /**
  * Initializes the video player.
  */
 function initPlayer() {
-  videoElement = document.getElementById('video');
-  adUiElement = document.getElementById('adUi');
-
-  loadUrl(BACKUP_STREAM);
   
   hls.on(Hls.Events.FRAG_PARSING_METADATA, function(event, data) {
     if (data) {
@@ -63,23 +75,5 @@ console.log(event, data.frag.relurl, data.frag.duration);
       default:
         break;
     }
-  });
-}
-
-
-/**
- * Loads and plays a Url.
- * @param  {string} url
- */
-function loadUrl(url) {
-  console.log('Loading:' + url);
-  hls.loadSource(url);
-  hls.attachMedia(videoElement);
-  hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
-    console.dir(event);
-    console.dir(data);
-
-    console.log('manifest loaded, found ' + data.levels.length + ' quality level');
-    videoElement.play();
   });
 }
