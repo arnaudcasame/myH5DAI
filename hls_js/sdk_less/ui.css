@@ -1,0 +1,10 @@
+.player-container{
+    display: grid;
+    grid-template-rows: repeat(1, 1fr);
+}
+
+.player-container #video{
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
