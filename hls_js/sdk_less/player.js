@@ -7,13 +7,18 @@ class Player {
   #DEFAULT_STREAM;
   #hls;
   #ui;
+  #isPlaying;
 
 
   constructor(stream){
     this.#DEFAULT_STREAM = stream ? stream : 'http://storage.googleapis.com/testtopbox-public/video_content/bbb/master.m3u8';
     if(Hls.isSupported()){
+      console.log(Hls.version);
       this.#hls = new Hls();
       this.#ui = new UI();
+      this.#ui.videoElement.poster = './big_buck_bunny.jpeg';
+      this.#ui.videoElement.addEventListener('click', this.onPlayerClick.bind(this));
+      this.#isPlaying = false;
     }
   }
 
@@ -21,12 +26,21 @@ class Player {
     this.#hls.loadSource(this.#DEFAULT_STREAM);
     this.#hls.attachMedia(this.#ui.videoElement);
     this.#hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-      console.dir(event);
-      console.dir(data);
+      console.log(event);
+      console.log(data);
   
       console.log('manifest loaded, found ' + data.levels.length + ' quality level');
       this.#ui.videoElement.play();
+      this.#isPlaying = true;
+      this.#ui.videoElement.controls = true;
     });
+  }
+
+  onPlayerClick(e){
+    if(!this.#isPlaying){
+      this.loadStream();
+    }
+    
   }
 }
 
