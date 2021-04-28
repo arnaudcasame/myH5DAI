@@ -28,7 +28,7 @@ class Player {
     this.#hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
       console.log(event);
       console.log(data);
-  
+      this.#ui.caracteristicsElement.innerHTML = '<div>' + 'manifest loaded, found ' + data.levels.length + ' quality level' + '</div>';
       console.log('manifest loaded, found ' + data.levels.length + ' quality level');
       this.#ui.videoElement.play();
       this.#isPlaying = true;
