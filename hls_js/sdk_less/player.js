@@ -25,14 +25,33 @@ class Player {
   loadStream(){
     this.#hls.loadSource(this.#DEFAULT_STREAM);
     this.#hls.attachMedia(this.#ui.videoElement);
+    this.#hls.on(Hls.Events.MANIFEST_LOADING, (event, data) => {
+      this.#ui.print(event, 'Manifest is Loading...', null);
+    });
+
+    this.#hls.on(Hls.Events.MANIFEST_LOADED, (event, data) => {
+      this.#ui.print(event, 'Manifest is successfully Loaded', null);
+    });
+
     this.#hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
       console.log(event);
       console.log(data);
-      this.#ui.caracteristicsElement.innerHTML = '<div>' + 'manifest loaded, found ' + data.levels.length + ' quality level' + '</div>';
       console.log('manifest loaded, found ' + data.levels.length + ' quality level');
       this.#ui.videoElement.play();
+      this.#ui.print(event, 'Manifest is successfully parsed, found ' + data.levels.length + ' quality level', null);
       this.#isPlaying = true;
       this.#ui.videoElement.controls = true;
+    });
+
+    this.#hls.on(Hls.Events.LEVEL_SWITCHING, (event, data) => {
+      this.#ui.print(event, 'Level is switching', null);
+      console.log(event, data);
+    });
+
+    this.#hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
+      this.#ui.print(event, 'Level is switched', null);
+      console.log(event, data);
+      console.log('new url: ' + this.#ui.videoElement.src)
     });
   }
 
