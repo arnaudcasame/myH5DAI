@@ -3,11 +3,25 @@
 class UI {
 
     #videoElement;
+    #tabButtonElements;
+    #tabElements;
     #caracteristicsElement;
+    #realTimeMetricsElement;
 
     constructor() {
         this.#videoElement = document.querySelector('#video');
         this.#caracteristicsElement = document.querySelector('#caracteristics');
+        this.#realTimeMetricsElement = document.querySelector('#real-time-metrics');
+        this.#tabButtonElements = document.querySelectorAll('.tab');
+        this.#tabElements = document.querySelectorAll('.console');
+        this.#tabButtonElements.forEach((element, i) => {
+            element.addEventListener('click', this.onTabButtonClicked.bind(this));
+        });
+        this.#tabElements.forEach((element, i) => {
+            if(i !== 0){
+                element.style.display = 'none';
+            }
+        });
     }
 
     get videoElement (){
@@ -16,6 +30,26 @@ class UI {
 
     get caracteristicsElement (){
         return this.#caracteristicsElement;
+    }
+
+    onTabButtonClicked(e){
+        this.#tabElements.forEach((element, i) => {
+            element.style.display = 'none';
+        });
+        switch (e.target.innerText) {
+            case 'Caracteristics':
+                this.#tabElements[0].style.display = 'block';
+                break;
+            case 'Real Time Metrics':
+                this.#tabElements[1].style.display = 'block';
+                break;
+            case 'Logs':
+                this.#tabElements[2].style.display = 'block';
+                break;
+            default:
+                this.#tabElements[3].style.display = 'block';
+                break;
+        }
     }
 
     print(eventType, message, alertType){

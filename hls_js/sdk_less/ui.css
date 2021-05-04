@@ -31,6 +31,7 @@ body{
 
 .tab{
     padding: 10px;
+    cursor: pointer;
 }
 
 .consoles{
@@ -52,8 +53,36 @@ body{
     margin: 0;
 }
 
+.tab:nth-child(1){
+    background-color: teal;
+}
+
+.console:nth-child(1){
+    background-color: teal;
+}
+
+.tab:nth-child(2){
+    background-color: tomato;
+}
+
+.console:nth-child(2){
+    background-color: tomato;
+}
+
+.tab:nth-child(3){
+    background-color:plum;
+}
+
+.console:nth-child(3){
+    background-color: plum;
+}
+
+.tab:nth-child(4){
+    background-color:indianred;
+}
+
 .console:nth-child(4){
-    background-color: transparent;
+    background-color:indianred;
 }
 
 .log-line{
