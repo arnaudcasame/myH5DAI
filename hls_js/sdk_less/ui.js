@@ -29,7 +29,7 @@ class UI {
     }
 
     get caracteristicsElement (){
-        return this.#caracteristicsElement;
+        return this.#realTimeMetricsElement;
     }
 
     onTabButtonClicked(e){
@@ -38,7 +38,7 @@ class UI {
         });
         switch (e.target.innerText) {
             case 'Caracteristics':
-                this.#tabElements[0].style.display = 'block';
+                this.#tabElements[0].style.display = 'flex';
                 break;
             case 'Real Time Metrics':
                 this.#tabElements[1].style.display = 'block';
@@ -64,7 +64,25 @@ class UI {
         messageContainer.innerText = message;
         listItem.appendChild(messageContainer);
         listItem.className = 'log-line';
-        this.#caracteristicsElement.appendChild(listItem);
+        this.#realTimeMetricsElement.appendChild(listItem);
+    }
+
+    printMaster(data){
+        const unOrderedList = document.createElement('ul');
+        unOrderedList.className = 'log-card';
+        for (const key in data) {
+            if (typeof data[key] !== 'object') {
+                const cardItem = document.createElement('li');
+                const keyHolder = document.createElement('span');
+                const valueHolder = document.createElement('span');
+                keyHolder.innerText = key;
+                valueHolder.innerText = data[key];
+                cardItem.appendChild(keyHolder);
+                cardItem.appendChild(valueHolder);
+                unOrderedList.appendChild(cardItem);
+            }
+        }
+        this.#caracteristicsElement.appendChild(unOrderedList);        
     }
 
     formatTime(){

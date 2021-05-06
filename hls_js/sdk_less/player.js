@@ -39,8 +39,12 @@ class Player {
       console.log('manifest loaded, found ' + data.levels.length + ' quality level');
       this.#ui.videoElement.play();
       this.#ui.print(event, 'Manifest is successfully parsed, found ' + data.levels.length + ' quality level', null);
+      for (const iterator of data.levels) {
+        this.#ui.printMaster(iterator);
+      }
       this.#isPlaying = true;
       this.#ui.videoElement.controls = true;
+      console.dir(this.#ui.videoElement);
     });
 
     this.#hls.on(Hls.Events.LEVEL_SWITCHING, (event, data) => {
