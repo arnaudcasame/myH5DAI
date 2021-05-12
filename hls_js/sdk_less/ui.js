@@ -7,11 +7,13 @@ class UI {
     #tabElements;
     #caracteristicsElement;
     #realTimeMetricsElement;
+    #errorElement;
 
     constructor() {
         this.#videoElement = document.querySelector('#video');
         this.#caracteristicsElement = document.querySelector('#caracteristics');
         this.#realTimeMetricsElement = document.querySelector('#real-time-metrics');
+        this.#errorElement = document.querySelector('#error');
         this.#tabButtonElements = document.querySelectorAll('.tab');
         this.#tabElements = document.querySelectorAll('.console');
         this.#tabButtonElements.forEach((element, i) => {
@@ -64,7 +66,11 @@ class UI {
         messageContainer.innerText = message;
         listItem.appendChild(messageContainer);
         listItem.className = 'log-line';
-        this.#realTimeMetricsElement.appendChild(listItem);
+        if(alertType && alertType === 1){
+            this.#errorElement.appendChild(listItem);
+        }else{
+            this.#realTimeMetricsElement.appendChild(listItem);
+        }
     }
 
     printMaster(data){

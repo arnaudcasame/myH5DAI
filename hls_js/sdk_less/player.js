@@ -18,6 +18,7 @@ class Player {
       this.#ui = new UI();
       this.#ui.videoElement.poster = './big_buck_bunny.jpeg';
       this.#ui.videoElement.addEventListener('click', this.onPlayerClick.bind(this));
+      this.#ui.videoElement.addEventListener('error', this.onPlayerError.bind(this));
       this.#isPlaying = false;
     }
   }
@@ -39,9 +40,12 @@ class Player {
       console.log('manifest loaded, found ' + data.levels.length + ' quality level');
       this.#ui.videoElement.play();
       this.#ui.print(event, 'Manifest is successfully parsed, found ' + data.levels.length + ' quality level', null);
+    
       for (const iterator of data.levels) {
         this.#ui.printMaster(iterator);
       }
+
+      this.#ui.printMaster(data.stats);
       this.#isPlaying = true;
       this.#ui.videoElement.controls = true;
       console.dir(this.#ui.videoElement);
@@ -57,13 +61,42 @@ class Player {
       console.log(event, data);
       console.log('new url: ' + this.#ui.videoElement.src)
     });
+    this.#hls.on(Hls.Events.ERROR, (event, data) => {
+      var errorType = data.type;
+      var errorDetails = data.details;
+      var errorFatal = data.fatal;
+      
+      switch (data.details) {
+        case Hls.ErrorDetails.FRAG_LOAD_ERROR:
+          console.log(event, data);
+          break;
+        case Hls.ErrorTypes.MEDIA_ERROR:
+          console.log(event, data);
+          console.log('fatal media error encountered, try to recover');
+          // hls.recoverMediaError();
+          break;
+        case Hls.ErrorDetails.FRAG_LOAD_ERROR:
+          console.log(event, data);
+          break;
+        default:
+          console.log(event, data);
+          this.#ui.print(event, `Type: ${data.type}`, 1);
+          this.#ui.print(event, `Details: ${data.details}`, 1);
+          this.#ui.print(event, `Url: ${data.context.url}`, 1);
+          this.#ui.print(event, `Responce code: ${data.response.code}`, 1);
+          break;
+      }
+    });
   }
 
   onPlayerClick(e){
     if(!this.#isPlaying){
       this.loadStream();
     }
-    
+  }
+
+  onPlayerError(e){
+    console.log('Error player', e);
   }
 }
 
