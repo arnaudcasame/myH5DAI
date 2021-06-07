@@ -1,0 +1,16 @@
+body{
+    padding: 0;
+    margin: 0;
+}
+
+.player-container{
+    display: grid;
+    gap: 1rem;
+    grid-template-rows: repeat(2, 1fr);
+}
+
+.player-container #video{
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}

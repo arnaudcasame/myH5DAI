@@ -166,7 +166,9 @@ class UI {
 
         document.body.appendChild(this.#consoleContainerEl);
 
-
+        const style = document.createElement('style');
+        style.appendChild(document.createTextNode(styles));
+        document.head.appendChild(style);
 
 
         this.#caracteristicsElement = document.querySelector('#caracteristics');
