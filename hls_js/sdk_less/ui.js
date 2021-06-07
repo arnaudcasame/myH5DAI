@@ -1,5 +1,127 @@
 
+const styles = `
+.console-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 350px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+}
 
+.tabs{
+    background-color: aquamarine;
+    display: flex;
+    overflow: hidden;
+    border-radius: 4px 0;
+}
+
+.tab{
+    padding: 10px;
+    cursor: pointer;
+}
+
+.consoles{
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    background-color: yellowgreen;
+}
+
+.console{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-x: scroll;
+}
+
+.tab:nth-child(1){
+    background-color: teal;
+}
+
+.console:nth-child(1){
+    background-color: teal;
+}
+
+.tab:nth-child(2){
+    background-color: tomato;
+}
+
+.console:nth-child(2){
+    background-color: tomato;
+}
+
+.tab:nth-child(3){
+    background-color:plum;
+}
+
+.console:nth-child(3){
+    background-color: plum;
+}
+
+.tab:nth-child(4){
+    background-color:indianred;
+}
+
+.console:nth-child(4){
+    background-color:indianred;
+}
+
+.log-line{
+    padding: 5px;
+}
+
+.log-line > span{
+    margin-right: 15px;
+}
+
+.log-card{
+    margin: 5px;
+    padding: 5px;
+    border: 1px solid lightgreen;
+    border-radius: 10px;
+    list-style: none;
+    flex-grow: 1;
+}
+
+.log-card > li > span{
+    margin: 0;
+    padding: 0 10px;
+    width: 80px;
+    flex-grow: 1;
+}
+
+.log-card > li{
+    display: flex;
+    flex-direction: row;
+}
+
+.log-card > li > span:nth-child(1){
+    background-color: lightgrey;
+    text-transform: capitalize;
+}
+
+.log-card > li > span:nth-child(2){
+    background-color: lightgreen;
+}
+
+ul#caracteristics {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    align-content: flex-start;
+}
+`;
 class UI {
 
     #videoElement;
@@ -9,8 +131,44 @@ class UI {
     #realTimeMetricsElement;
     #errorElement;
 
+    #consoleContainerEl;
+    #tabHeadersHolderEl;
+    #consolesHolderEl;
+
+
     constructor() {
         this.#videoElement = document.querySelector('#video');
+
+        const tabNames = ['Caracteristics', 'Real Time Metrics', 'Logs', 'Error'];
+        const tabContentIds = ['caracteristics', 'real-time-metrics', 'logs', 'error'];
+        this.#consoleContainerEl = document.createElement('div');
+        this.#consoleContainerEl.className = 'console-container';
+        this.#tabHeadersHolderEl = document.createElement('div');
+        this.#tabHeadersHolderEl.className = 'tabs';
+        this.#consolesHolderEl = document.createElement('div');
+        this.#consolesHolderEl.className = 'consoles';
+        this.#consoleContainerEl.appendChild(this.#tabHeadersHolderEl);
+        this.#consoleContainerEl.appendChild(this.#consolesHolderEl);
+
+        for (const tabName of tabNames) {
+            const tab = document.createElement('span');
+            tab.className = 'tab';
+            tab.innerText = tabName;
+            this.#tabHeadersHolderEl.appendChild(tab);
+        }
+
+        for (const tabId of tabContentIds) {
+            const tab = document.createElement('ul');
+            tab.className = 'console';
+            tab.id = tabId;
+            this.#consolesHolderEl.appendChild(tab);
+        }
+
+        document.body.appendChild(this.#consoleContainerEl);
+
+
+
+
         this.#caracteristicsElement = document.querySelector('#caracteristics');
         this.#realTimeMetricsElement = document.querySelector('#real-time-metrics');
         this.#errorElement = document.querySelector('#error');

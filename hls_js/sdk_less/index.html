@@ -10,23 +10,9 @@
 <body>
   <main class="player-container">
     <video id="video"></video>
-    <div class="console-container">
-      <div class="tabs">
-        <span class="tab">Caracteristics</span>
-        <span class="tab">Real Time Metrics</span>
-        <span class="tab">Logs</span>
-        <span class="tab">Error</span>
-      </div>
-      <div class="consoles">
-        <ul class="console" id="caracteristics"></ul>
-        <ul class="console" id="real-time-metrics"></ul>
-        <ul class="console" id="logs"></ul>
-        <ul class="console" id="error"></ul>
-      </div>
-    </div>
   </main>
   <script>
-    var player = new Player();
+    var player = new Player('https://encodersim.sandbox.google.com/masterPlaylist/28dfaf02-a6f9-46b0-b193-6ec8c11ad4cb/master.m3u8');
   </script>
 </body>
 </html>
