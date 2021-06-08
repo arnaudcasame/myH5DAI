@@ -39,7 +39,7 @@ class Player {
       console.log(data);
       console.log('manifest loaded, found ' + data.levels.length + ' quality level');
       this.#ui.videoElement.play();
-      this.#ui.print(event, 'Manifest is successfully parsed, found ' + data.levels.length + ' quality level', null);
+      this.#ui.print(event, `Manifest is successfully parsed, found ${data.levels.length} quality levels`, null);
     
       for (const iterator of data.levels) {
         this.#ui.printMaster(iterator);
@@ -53,6 +53,9 @@ class Player {
 
     this.#hls.on(Hls.Events.LEVEL_SWITCHING, (event, data) => {
       this.#ui.print(event, `Stream is switching to level ${data.level} with bitrate ${data.bitrate/1000}kbps`, null);
+      this.#ui.print(event, `VideoCodec: ${data.videoCodec}`, null);
+      this.#ui.print(event, `AudioCodec: ${data.audioCodec}`, null);
+      this.#ui.print(event, `Video Dimension: ${data.width}/${data.height}`, null);
       console.log(event, data);
     });
 

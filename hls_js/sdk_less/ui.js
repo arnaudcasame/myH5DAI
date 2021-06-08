@@ -85,6 +85,12 @@ const styles = `
     margin-right: 15px;
 }
 
+.log-line > span:nth-child(2){
+    display: inline-block;
+    width: 150px;
+    margin-right: 0;
+}
+
 .log-card{
     margin: 5px;
     padding: 5px;
@@ -168,7 +174,7 @@ class UI {
         document.body.appendChild(this.#consoleContainerEl);
 
         const style = document.createElement('style');
-        style.appendChild(document.createTextNode(styles));
+        // style.appendChild(document.createTextNode(styles));
         document.head.appendChild(style);
 
 
