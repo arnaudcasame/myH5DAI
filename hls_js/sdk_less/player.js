@@ -2,30 +2,24 @@
 // goog.module('google3.javascript.ads.interactivemedia.sdk.dai.sample.h5.hls_js.simple.dai');
 
 
-class Player {
+class Console {
 
-  #DEFAULT_STREAM;
   #hls;
   #ui;
   #isPlaying;
 
 
-  constructor(stream){
-    this.#DEFAULT_STREAM = stream ? stream : 'http://storage.googleapis.com/testtopbox-public/video_content/bbb/master.m3u8';
+  constructor(hls){
     if(Hls.isSupported()){
       console.log(Hls.version);
+      this.#hls = hls;
       this.#ui = new UI();
-      this.#hls = new Hls({ debug: new CustomLogger(this.#ui)});
-      this.#ui.videoElement.poster = './big_buck_bunny.jpeg';
-      this.#ui.videoElement.addEventListener('click', this.onPlayerClick.bind(this));
-      this.#ui.videoElement.addEventListener('error', this.onPlayerError.bind(this));
       this.#isPlaying = false;
+      this.loadStream();
     }
   }
 
   loadStream(){
-    this.#hls.loadSource(this.#DEFAULT_STREAM);
-    this.#hls.attachMedia(this.#ui.videoElement);
     this.#hls.on(Hls.Events.MANIFEST_LOADING, (event, data) => {
       this.#ui.print(event, 'Manifest is Loading...', null, null);
     });
@@ -93,6 +87,10 @@ class Player {
     });
   }
 
+  get uiObject(){
+    return this.#ui;
+  }
+
   onPlayerClick(e){
     if(!this.#isPlaying){
       this.loadStream();
@@ -109,7 +107,13 @@ class CustomLogger {
   #uiObject;
 
   constructor(uiObject){
-    this.#uiObject = uiObject;
+    if(uiObject){
+      this.#uiObject = uiObject;
+    }
+  }
+
+  setUiElement(uiObject){
+    this.#uiObject  = uiObject;
   }
 
   log(msg){

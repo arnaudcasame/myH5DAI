@@ -11,7 +11,20 @@
     <video id="video"></video>
   </main>
   <script>
-    var player = new Player('https://encodersim.sandbox.google.com/masterPlaylist/28dfaf02-a6f9-46b0-b193-6ec8c11ad4cb/master.m3u8');
+    var hls;
+    var videoElement = document.querySelector('#video');
+    var DEFAULT_STREAM = 'https://encodersim.sandbox.google.com/masterPlaylist/28dfaf02-a6f9-46b0-b193-6ec8c11ad4cb/master.m3u8';
+    if(Hls.isSupported()){
+      var logger = new CustomLogger()
+      hls = new Hls({ debug: logger});
+      var myConsole = new Console(hls);
+      logger.setUiElement(myConsole.uiObject);
+      // videoElement.poster = './big_buck_bunny.jpeg';
+      // videoElement.addEventListener('click', this.onPlayerClick.bind(this));
+      // videoElement.addEventListener('error', this.onPlayerError.bind(this));
+      hls.loadSource(DEFAULT_STREAM);
+      hls.attachMedia(videoElement);
+    }
   </script>
 </body>
 </html>
