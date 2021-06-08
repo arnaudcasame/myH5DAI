@@ -137,6 +137,7 @@ class UI {
     #caracteristicsElement;
     #realTimeMetricsElement;
     #errorElement;
+    #logsElement;
 
     #consoleContainerEl;
     #tabHeadersHolderEl;
@@ -181,6 +182,7 @@ class UI {
         this.#caracteristicsElement = document.querySelector('#caracteristics');
         this.#realTimeMetricsElement = document.querySelector('#real-time-metrics');
         this.#errorElement = document.querySelector('#error');
+        this.#logsElement = document.querySelector('#logs');
         this.#tabButtonElements = document.querySelectorAll('.tab');
         this.#tabElements = document.querySelectorAll('.console');
         this.#tabButtonElements.forEach((element, i) => {
@@ -221,7 +223,7 @@ class UI {
         }
     }
 
-    print(eventType, message, alertType){
+    print(eventType, message, alertType, console){
         const listItem = document.createElement('li');
         const timeContainer = document.createElement('span');
         const eventContainer = document.createElement('span');
@@ -233,11 +235,25 @@ class UI {
         messageContainer.innerText = message;
         listItem.appendChild(messageContainer);
         listItem.className = 'log-line';
-        if(alertType && alertType === 1){
-            this.#errorElement.appendChild(listItem);
-        }else{
-            this.#realTimeMetricsElement.appendChild(listItem);
+
+        switch(console){
+            case 4:
+                this.#errorElement.appendChild(listItem);
+                this.scrollToBottom(this.#errorElement);
+                break;
+            case 2:
+                this.#logsElement.appendChild(listItem);
+                this.scrollToBottom(this.#logsElement);
+                break;
+            default:
+                this.#realTimeMetricsElement.appendChild(listItem);
+                this.scrollToBottom(this.#realTimeMetricsElement);
+                break;
         }
+    }
+
+    scrollToBottom(element){
+        element.scrollTop = element.scrollHeight;
     }
 
     printMaster(data){

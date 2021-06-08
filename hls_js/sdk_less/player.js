@@ -14,8 +14,8 @@ class Player {
     this.#DEFAULT_STREAM = stream ? stream : 'http://storage.googleapis.com/testtopbox-public/video_content/bbb/master.m3u8';
     if(Hls.isSupported()){
       console.log(Hls.version);
-      this.#hls = new Hls();
       this.#ui = new UI();
+      this.#hls = new Hls({ debug: new CustomLogger(this.#ui)});
       this.#ui.videoElement.poster = './big_buck_bunny.jpeg';
       this.#ui.videoElement.addEventListener('click', this.onPlayerClick.bind(this));
       this.#ui.videoElement.addEventListener('error', this.onPlayerError.bind(this));
@@ -27,11 +27,11 @@ class Player {
     this.#hls.loadSource(this.#DEFAULT_STREAM);
     this.#hls.attachMedia(this.#ui.videoElement);
     this.#hls.on(Hls.Events.MANIFEST_LOADING, (event, data) => {
-      this.#ui.print(event, 'Manifest is Loading...', null);
+      this.#ui.print(event, 'Manifest is Loading...', null, null);
     });
 
     this.#hls.on(Hls.Events.MANIFEST_LOADED, (event, data) => {
-      this.#ui.print(event, 'Manifest is successfully Loaded', null);
+      this.#ui.print(event, 'Manifest is successfully Loaded', null, null);
     });
 
     this.#hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
@@ -39,7 +39,7 @@ class Player {
       console.log(data);
       console.log('manifest loaded, found ' + data.levels.length + ' quality level');
       this.#ui.videoElement.play();
-      this.#ui.print(event, `Manifest is successfully parsed, found ${data.levels.length} quality levels`, null);
+      this.#ui.print(event, `Manifest is successfully parsed, found ${data.levels.length} quality levels`, null, null);
     
       for (const iterator of data.levels) {
         this.#ui.printMaster(iterator);
@@ -52,18 +52,19 @@ class Player {
     });
 
     this.#hls.on(Hls.Events.LEVEL_SWITCHING, (event, data) => {
-      this.#ui.print(event, `Stream is switching to level ${data.level} with bitrate ${data.bitrate/1000}kbps`, null);
-      this.#ui.print(event, `VideoCodec: ${data.videoCodec}`, null);
-      this.#ui.print(event, `AudioCodec: ${data.audioCodec}`, null);
-      this.#ui.print(event, `Video Dimension: ${data.width}/${data.height}`, null);
+      this.#ui.print(event, `Stream is switching to level ${data.level} with bitrate ${data.bitrate/1000}kbps`, null, null);
+      this.#ui.print(event, `VideoCodec: ${data.videoCodec}`, null, null);
+      this.#ui.print(event, `AudioCodec: ${data.audioCodec}`, null, null);
+      this.#ui.print(event, `Video Dimension: ${data.width}/${data.height}`, null, null);
       console.log(event, data);
     });
 
     this.#hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
-      this.#ui.print(event, 'Stream switched to level ' + data.level, null);
+      this.#ui.print(event, 'Stream switched to level ' + data.level, null, null);
       console.log(event, data);
       console.log('new url: ' + this.#ui.videoElement.src)
     });
+
     this.#hls.on(Hls.Events.ERROR, (event, data) => {
       var errorType = data.type;
       var errorDetails = data.details;
@@ -83,10 +84,10 @@ class Player {
           break;
         default:
           console.log(event, data);
-          this.#ui.print(event, `Type: ${data.type}`, 1);
-          this.#ui.print(event, `Details: ${data.details}`, 1);
-          this.#ui.print(event, `Url: ${data.context.url}`, 1);
-          this.#ui.print(event, `Responce code: ${data.response.code}`, 1);
+          this.#ui.print(event, `Type: ${data.type}`, null, 4);
+          this.#ui.print(event, `Details: ${data.details}`, null, 4);
+          this.#ui.print(event, `Url: ${data.context.url}`, null, 4);
+          this.#ui.print(event, `Responce code: ${data.response.code}`, null, 4);
           break;
       }
     });
@@ -100,6 +101,19 @@ class Player {
 
   onPlayerError(e){
     console.log('Error player', e);
+  }
+}
+
+class CustomLogger {
+
+  #uiObject;
+
+  constructor(uiObject){
+    this.#uiObject = uiObject;
+  }
+
+  log(msg){
+    this.#uiObject.print('debug', msg, null, 2);
   }
 }
 
