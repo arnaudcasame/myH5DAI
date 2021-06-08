@@ -10,6 +10,7 @@ const styles = `
     flex-direction: column;
     padding: 0;
     margin: 0;
+    font-family: monospace;
 }
 
 .tabs{

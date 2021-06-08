@@ -52,12 +52,12 @@ class Player {
     });
 
     this.#hls.on(Hls.Events.LEVEL_SWITCHING, (event, data) => {
-      this.#ui.print(event, 'Level is switching', null);
+      this.#ui.print(event, `Stream is switching to level ${data.level} with bitrate ${data.bitrate/1000}kbps`, null);
       console.log(event, data);
     });
 
     this.#hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
-      this.#ui.print(event, 'Level is switched', null);
+      this.#ui.print(event, 'Stream switched to level ' + data.level, null);
       console.log(event, data);
       console.log('new url: ' + this.#ui.videoElement.src)
     });
