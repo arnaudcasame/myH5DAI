@@ -11,10 +11,11 @@ const styles = `
     padding: 0;
     margin: 0;
     font-family: monospace;
+    background-color: darkgrey;
 }
 
 .tabs{
-    background-color: aquamarine;
+    background-color: green;
     display: flex;
     overflow: hidden;
     border-radius: 4px 0;
@@ -32,7 +33,7 @@ const styles = `
     padding: 0;
     margin: 0;
     position: relative;
-    background-color: yellowgreen;
+    background-color: transparent;
 }
 
 .console{
@@ -46,35 +47,35 @@ const styles = `
 }
 
 .tab:nth-child(1){
-    background-color: teal;
+    background-color: transparent;
 }
 
 .console:nth-child(1){
-    background-color: teal;
+    background-color: transparent;
 }
 
 .tab:nth-child(2){
-    background-color: tomato;
+    background-color: transparent;
 }
 
 .console:nth-child(2){
-    background-color: tomato;
+    background-color: transparent;
 }
 
 .tab:nth-child(3){
-    background-color:plum;
+    background-color:transparent;
 }
 
 .console:nth-child(3){
-    background-color: plum;
+    background-color: transparent;
 }
 
 .tab:nth-child(4){
-    background-color:indianred;
+    background-color: transparent;
 }
 
 .console:nth-child(4){
-    background-color:indianred;
+    background-color: transparent;
 }
 
 .log-line{
@@ -94,7 +95,7 @@ const styles = `
 .log-card{
     margin: 5px;
     padding: 5px;
-    border: 1px solid lightgreen;
+    border: 1px solid black;
     border-radius: 10px;
     list-style: none;
     flex-grow: 1;
@@ -113,12 +114,12 @@ const styles = `
 }
 
 .log-card > li > span:nth-child(1){
-    background-color: lightgrey;
+    //color: lightgrey;
     text-transform: capitalize;
 }
 
 .log-card > li > span:nth-child(2){
-    background-color: lightgreen;
+    //color: lightgrey;
 }
 
 ul#caracteristics {
@@ -131,7 +132,6 @@ ul#caracteristics {
 `;
 class UI {
 
-    #videoElement;
     #tabButtonElements;
     #tabElements;
     #caracteristicsElement;
@@ -145,7 +145,10 @@ class UI {
 
 
     constructor() {
-        this.#videoElement = document.querySelector('#video');
+
+        const style = document.createElement('style');
+        style.appendChild(document.createTextNode(styles));
+        document.head.appendChild(style);
 
         const tabNames = ['Caracteristics', 'Real Time Metrics', 'Logs', 'Error'];
         const tabContentIds = ['caracteristics', 'real-time-metrics', 'logs', 'error'];
@@ -174,10 +177,6 @@ class UI {
 
         document.body.appendChild(this.#consoleContainerEl);
 
-        const style = document.createElement('style');
-        // style.appendChild(document.createTextNode(styles));
-        document.head.appendChild(style);
-
 
         this.#caracteristicsElement = document.querySelector('#caracteristics');
         this.#realTimeMetricsElement = document.querySelector('#real-time-metrics');
@@ -187,6 +186,9 @@ class UI {
         this.#tabElements = document.querySelectorAll('.console');
         this.#tabButtonElements.forEach((element, i) => {
             element.addEventListener('click', this.onTabButtonClicked.bind(this));
+            if(i === 0){
+                element.style.backgroundColor = 'darkgrey';
+            }
         });
         this.#tabElements.forEach((element, i) => {
             if(i !== 0){
@@ -195,19 +197,19 @@ class UI {
         });
     }
 
-    get videoElement (){
-        return this.#videoElement;
-    }
-
     get caracteristicsElement (){
         return this.#realTimeMetricsElement;
     }
 
     onTabButtonClicked(e){
+
         this.#tabElements.forEach((element, i) => {
             element.style.display = 'none';
+            this.#tabButtonElements[i].style.backgroundColor = 'transparent';
         });
+        e.target.style.backgroundColor = 'darkgrey';
         switch (e.target.innerText) {
+            
             case 'Caracteristics':
                 this.#tabElements[0].style.display = 'flex';
                 break;

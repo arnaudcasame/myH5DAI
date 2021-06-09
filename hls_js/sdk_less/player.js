@@ -11,9 +11,9 @@ class Console {
 
   constructor(hls){
     if(Hls.isSupported()){
+      this.#ui = new UI();
       console.log(Hls.version);
       this.#hls = hls;
-      this.#ui = new UI();
       this.#isPlaying = false;
       this.loadStream();
     }
@@ -32,7 +32,7 @@ class Console {
       console.log(event);
       console.log(data);
       console.log('manifest loaded, found ' + data.levels.length + ' quality level');
-      this.#ui.videoElement.play();
+      // this.hls.media.play();
       this.#ui.print(event, `Manifest is successfully parsed, found ${data.levels.length} quality levels`, null, null);
     
       for (const iterator of data.levels) {
@@ -41,8 +41,8 @@ class Console {
 
       this.#ui.printMaster(data.stats);
       this.#isPlaying = true;
-      this.#ui.videoElement.controls = true;
-      console.dir(this.#ui.videoElement);
+      this.#hls.media.controls = true;
+      console.dir(this.#hls.media);
     });
 
     this.#hls.on(Hls.Events.LEVEL_SWITCHING, (event, data) => {
@@ -56,7 +56,7 @@ class Console {
     this.#hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
       this.#ui.print(event, 'Stream switched to level ' + data.level, null, null);
       console.log(event, data);
-      console.log('new url: ' + this.#ui.videoElement.src)
+      console.log('new url: ' + this.#hls.media.src);
     });
 
     this.#hls.on(Hls.Events.ERROR, (event, data) => {
@@ -80,8 +80,8 @@ class Console {
           console.log(event, data);
           this.#ui.print(event, `Type: ${data.type}`, null, 4);
           this.#ui.print(event, `Details: ${data.details}`, null, 4);
-          this.#ui.print(event, `Url: ${data.context.url}`, null, 4);
-          this.#ui.print(event, `Responce code: ${data.response.code}`, null, 4);
+          // this.#ui.print(event, `Url: ${data.context.url}`, null, 4);
+          // this.#ui.print(event, `Responce code: ${data.response.code}`, null, 4);
           break;
       }
     });
