@@ -15,11 +15,11 @@ class Console {
       console.log(Hls.version);
       this.#hls = hls;
       this.#isPlaying = false;
-      this.loadStream();
+      this.subscribeToEvents();
     }
   }
 
-  loadStream(){
+  subscribeToEvents(){
     this.#hls.on(Hls.Events.MANIFEST_LOADING, (event, data) => {
       this.#ui.print(event, 'Manifest is Loading...', null, null);
     });
@@ -55,34 +55,54 @@ class Console {
 
     this.#hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
       this.#ui.print(event, 'Stream switched to level ' + data.level, null, null);
-      console.log(event, data);
-      console.log('new url: ' + this.#hls.media.src);
+      // console.log(event, data);
+    });
+
+    this.#hls.on(Hls.Events.LEVEL_LOADING, (event, data) => {
+      this.#ui.print(event, 'Player is loading stream\'s media playlist level ' + data.level, null, null);
+      this.#ui.print(event, 'Stream\'s media playlist level ' + data.level + ' url: ' + data.url, null, null);
+      // console.log(event, data);
+    });
+
+    this.#hls.on(Hls.Events.LEVEL_LOADED, (event, data) => {
+      this.#ui.print(event, 'Player loaded Stream\'s media playlist level ' + data.level, null, null);
+      // console.log(event, data);
+      // console.log('new url: ' + this.#hls.media.src);
     });
 
     this.#hls.on(Hls.Events.ERROR, (event, data) => {
       var errorType = data.type;
       var errorDetails = data.details;
       var errorFatal = data.fatal;
-      
-      switch (data.details) {
-        case Hls.ErrorDetails.FRAG_LOAD_ERROR:
-          console.log(event, data);
-          break;
-        case Hls.ErrorTypes.MEDIA_ERROR:
-          console.log(event, data);
-          console.log('fatal media error encountered, try to recover');
-          // hls.recoverMediaError();
-          break;
-        case Hls.ErrorDetails.FRAG_LOAD_ERROR:
-          console.log(event, data);
-          break;
-        default:
-          console.log(event, data);
-          this.#ui.print(event, `Type: ${data.type}`, null, 4);
-          this.#ui.print(event, `Details: ${data.details}`, null, 4);
-          // this.#ui.print(event, `Url: ${data.context.url}`, null, 4);
-          // this.#ui.print(event, `Responce code: ${data.response.code}`, null, 4);
-          break;
+      if(errorFatal){
+        switch (errorType) {
+          case Hls.ErrorTypes.MEDIA_ERROR:
+            console.log('fatal media error encountered, try to recover');
+            this.#ui.print(event, `Type: ${errorType}`, null, 4);
+            this.#hls.recoverMediaError();
+            break;
+          case Hls.ErrorTypes.NETWORK_ERROR:
+            this.#ui.print(event, `Type: ${data.type}`, null, 4);
+            this.#hls.startload();
+            break;
+          default:
+            console.log(event, data);
+            this.#ui.print(event, `Type: ${data.type}`, null, 4);
+            this.#ui.print(event, `Details: ${errorDetails}`, null, 4);
+            // this.#ui.print(event, `Url: ${data.context.url}`, null, 4);
+            // this.#ui.print(event, `Responce code: ${data.response.code}`, null, 4);
+            this.#hls.destroy();
+            break;
+        }
+      }else{
+        switch (errorDetails) {
+          case Hls.ErrorDetails.FRAG_LOAD_ERROR:
+            console.log(event, data);
+            break;
+          default:
+            console.log(event, data);
+            break;
+        }
       }
     });
   }
