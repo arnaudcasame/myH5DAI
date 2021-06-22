@@ -11,7 +11,8 @@ const styles = `
     padding: 0;
     margin: 0;
     font-family: monospace;
-    background-color: darkgrey;
+    background-color: hsl(0, 0%, 15%);
+    color: lightgray;
 }
 
 .tabs{
@@ -24,6 +25,7 @@ const styles = `
 .tab{
     padding: 10px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 .consoles{
@@ -79,23 +81,15 @@ const styles = `
 }
 
 .log-line{
+    display: grid;
+    grid-template-columns: 80px 160px 1fr;
     padding: 5px;
-}
-
-.log-line > span{
-    margin-right: 15px;
-}
-
-.log-line > span:nth-child(2){
-    display: inline-block;
-    width: 150px;
-    margin-right: 0;
 }
 
 .log-card{
     margin: 5px;
     padding: 5px;
-    border: 1px solid black;
+    border: 1px solid lightgray;
     border-radius: 10px;
     list-style: none;
     flex-grow: 1;
@@ -187,7 +181,7 @@ class UI {
         this.#tabButtonElements.forEach((element, i) => {
             element.addEventListener('click', this.onTabButtonClicked.bind(this));
             if(i === 0){
-                element.style.backgroundColor = 'darkgrey';
+                element.style.backgroundColor = 'hsl(0, 0%, 15%)';
             }
         });
         this.#tabElements.forEach((element, i) => {
@@ -207,7 +201,7 @@ class UI {
             element.style.display = 'none';
             this.#tabButtonElements[i].style.backgroundColor = 'transparent';
         });
-        e.target.style.backgroundColor = 'darkgrey';
+        e.target.style.backgroundColor = 'hsl(0, 0%, 15%)';
         switch (e.target.innerText) {
             
             case 'Caracteristics':
