@@ -29,14 +29,12 @@ class Console {
     });
 
     this.#hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-      console.log(event);
-      console.log(data);
+      console.log(event, data);
       console.log('manifest loaded, found ' + data.levels.length + ' quality level');
-      // this.hls.media.play();
       this.#ui.print(event, `Manifest is successfully parsed, found ${data.levels.length} quality levels`, null, null);
-    
-      for (const iterator of data.levels) {
-        this.#ui.printMaster(iterator);
+      for (const level of data.levels) {
+        level['fps'] = level.attrs['FRAME-RATE'];
+        this.#ui.printMaster(level);
       }
 
       this.#ui.printMaster(data.stats);
@@ -51,11 +49,13 @@ class Console {
       this.#ui.print(event, `AudioCodec: ${data.audioCodec}`, null, null);
       this.#ui.print(event, `Video Dimension: ${data.width}/${data.height}`, null, null);
       console.log(event, data);
+      this.#ui.indicateUpcomingLevel(data.level);
     });
 
     this.#hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
       this.#ui.print(event, 'Stream switched to level ' + data.level, null, null);
-      // console.log(event, data);
+      console.log(event, data);
+      this.#ui.indicateCurrentLevel(data.level);
     });
 
     this.#hls.on(Hls.Events.LEVEL_LOADING, (event, data) => {
@@ -67,6 +67,12 @@ class Console {
     this.#hls.on(Hls.Events.LEVEL_LOADED, (event, data) => {
       this.#ui.print(event, 'Player loaded Stream\'s media playlist level ' + data.level, null, null);
       // console.log(event, data);
+      // console.log('new url: ' + this.#hls.media.src);
+    });
+
+    this.#hls.on(Hls.Events.FPS_DROP, (event, data) => {
+      // this.#ui.print(event, 'Player loaded Stream\'s media playlist level ' + data.level, null, null);
+      console.log(event, data);
       // console.log('new url: ' + this.#hls.media.src);
     });
 

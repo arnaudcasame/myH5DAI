@@ -123,6 +123,28 @@ ul#caracteristics {
     align-items: baseline;
     align-content: flex-start;
 }
+
+.current-level {
+    border-color: greenyellow;
+    color: greenyellow;
+}
+
+.apply-twinkle {
+    animation-name: twinkle;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes twinkle {
+    from {
+        border-color: lightgray;
+        color: lightgray;
+    }
+    to {
+        border-color: greenyellow;
+        color: greenyellow;
+    }
+}
 `;
 class UI {
 
@@ -136,6 +158,8 @@ class UI {
     #consoleContainerEl;
     #tabHeadersHolderEl;
     #consolesHolderEl;
+
+    #currentLevelBox;
 
 
     constructor() {
@@ -269,6 +293,27 @@ class UI {
         }
         this.#caracteristicsElement.appendChild(unOrderedList);        
     }
+
+    indicateUpcomingLevel(level){
+        const levelBox = this.#caracteristicsElement.children[level];
+        if(levelBox && !levelBox.classList.contains('apply-twinkle')){
+            levelBox.classList.add('apply-twinkle');
+        }
+    }
+
+    indicateCurrentLevel(level){
+        if(this.#currentLevelBox && this.#currentLevelBox.classList.contains('current-level')){
+            this.#currentLevelBox.classList.remove('current-level');
+        }
+        this.#currentLevelBox = this.#caracteristicsElement.children[level];
+        if(this.#currentLevelBox && !this.#currentLevelBox.classList.contains('current-level')){
+            this.#currentLevelBox.innerHTML += '<li><span>level</span><span>' +level+ '</span></li>';
+            this.#currentLevelBox.classList.remove('apply-twinkle');
+            this.#currentLevelBox.classList.add('current-level');
+        }
+    }
+
+
 
     formatTime(){
         let logTime = new Date();
